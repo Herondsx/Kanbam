@@ -1,104 +1,112 @@
-// --- Simulação de digitação ---
-const prompts = {
-    1: 'Com base na planilha de "Open Issues" em anexo, identifique os 3 itens mais críticos (considerando prioridade e prazo) e gere um rascunho de e-mail em português para a equipe, cobrando ação.',
-    2: 'Preciso criar uma apresentação para la Ata de Design Review do projeto "Linha de Montagem Final". Use o template padrão da Comau para estruturar os slides. Para o slide de "Arquitetura da Solução", gere uma imagem conceitual de uma célula robótica com esteiras e um robô de 6 eixos.',
-    3: 'Faça uma pesquisa comparativa. Primeiro, compare o software "Process Simulate v23" com a nova versão "v24", destacando 3 melhorias principais. Segundo, liste 3 ferramentas concorrentes para programação offline de robôs (OLP), e crie uma tabela comparando um ponto forte e um ponto fraco de cada uma.'
-};
+// ---------- BASIC DECK NAV ----------
+const deck = document.getElementById('deck');
+const slides = Array.from(deck.querySelectorAll('.slide'));
+const btnPrev = document.querySelector('[data-action="prev"]');
+const btnNext = document.querySelector('[data-action="next"]');
+const progressFill = document.getElementById('progress-fill');
+const thumbs = document.getElementById('thumbs');
 
-function typeWriter(element, text, speed = 50) {
-    let i = 0;
-    element.innerHTML = '';
-    function type() {
-        if (i < text.length) {
-            element.innerHTML += text.charAt(i);
-            i++;
-            setTimeout(type, speed);
-        }
+let i = 0;
+function go(n){
+  i = Math.max(0, Math.min(slides.length-1, n));
+  slides.forEach((s,idx)=>{
+    s.style.display = (idx===i)?'flex':'none';
+  });
+  deck.dataset.index = i;
+  const pct = ((i+1)/slides.length)*100;
+  progressFill.style.width = pct+'%';
+  updateThumbs();
+  location.hash = '#s'+(i+1);
+  triggerTypingIfAny();
+}
+function next(){ go(i+1) }
+function prev(){ go(i-1) }
+
+btnPrev.addEventListener('click', prev);
+btnNext.addEventListener('click', next);
+
+document.addEventListener('keydown', (e)=>{
+  if (e.key==='ArrowRight' || e.key==='PageDown' || e.key===' ') next();
+  if (e.key==='ArrowLeft' || e.key==='PageUp') prev();
+});
+
+// hash nav
+if (location.hash && /^#s\d+/.test(location.hash)){
+  const idx = parseInt(location.hash.replace('#s',''),10)-1;
+  go(idx);
+}else{
+  go(0);
+}
+
+// thumbnails
+function buildThumbs(){
+  slides.forEach((s,idx)=>{
+    const b = document.createElement('button');
+    b.title = s.dataset.title || ('Slide '+(idx+1));
+    b.addEventListener('click', ()=>go(idx));
+    thumbs.appendChild(b);
+  });
+}
+function updateThumbs(){
+  thumbs.querySelectorAll('button').forEach((b,idx)=>{
+    b.setAttribute('aria-current', idx===i ? 'true' : 'false');
+  });
+}
+buildThumbs(); updateThumbs();
+
+// ---------- DEMO PROMPTS (typewriter) ----------
+const demoPrompts = [
+`AICO — ATA de Design Review (template TC-DR-001)
+Projeto: Linha de Montagem Final
+Inclua: participantes, decisões, ações (responsável/prazo), riscos e próximos passos.
+Use linguagem formal e numeração de seções.`,
+`Gemini — Consolidar "Open Issues" a partir de e-mails/ata
+Entregue tabela: ID • Descrição • Responsável • Prioridade • Prazo • Status
+Destaque 3 itens críticos e sugira plano de ação resumido.`,
+`Gmail com Gemini — E-mail técnico de cobrança
+Assunto: Atualização do Item #102 (Alta prioridade)
+Mensagem: resumo do bloqueio, responsável, prazo e próximos passos. Tom profissional.`,
+`Sheets com Gemini — Dashboard de projeto
+Crie: tabela de tarefas, % concluído, fórmulas condicionais, gráfico de burndown, sem macros.`
+];
+let demoIndex = 0;
+const demoEl = document.getElementById('demoPrompt');
+const btnType = document.getElementById('btnType');
+const btnSwap = document.getElementById('btnSwap');
+
+function typeText(el, text, speed=18){
+  el.textContent = '';
+  let j = 0;
+  function step(){
+    if (j < text.length){
+      el.textContent += text[j++];
+      setTimeout(step, speed);
     }
-    type();
+  }
+  step();
 }
-
-function runSimulation(id) {
-    const promptEl = document.getElementById(`prompt${id}`);
-    const responseEl = document.getElementById(`response${id}`);
-    
-    responseEl.style.display = 'none';
-    typeWriter(promptEl, prompts[id], 20);
-
-    setTimeout(() => {
-        responseEl.style.display = 'block';
-    }, prompts[id].length * 20 + 500);
+function triggerTypingIfAny(){
+  // called when slide changes
+  const s = slides[i];
+  if (s && s.querySelector('#demoPrompt')){
+    demoEl.textContent = '';
+  }
 }
+btnType?.addEventListener('click', ()=> typeText(demoEl, demoPrompts[demoIndex]));
+btnSwap?.addEventListener('click', ()=>{
+  demoIndex = (demoIndex+1) % demoPrompts.length;
+  demoEl.textContent = '…';
+});
 
-// --- Animação de Fundo Interativa com Three.js ---
-let scene, camera, renderer, points;
-let mouseX = 0, mouseY = 0;
-let windowHalfX = window.innerWidth / 2;
-let windowHalfY = window.innerHeight / 2;
-
-function init() {
-    const container = document.getElementById('interactive-bg');
-    if (!container) return; // Garante que o container existe
-    
-    scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(75, container.offsetWidth / container.offsetHeight, 1, 10000);
-    camera.position.z = 1000;
-
-    const particleCount = 1500;
-    const particles = new THREE.BufferGeometry();
-    const positions = new Float32Array(particleCount * 3);
-
-    for (let i = 0; i < particleCount * 3; i++) {
-        positions[i] = (Math.random() * 2 - 1) * 2000;
+// expand "Ver prompt"
+document.querySelectorAll('.btn.demo').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const target = document.querySelector(btn.dataset.demo);
+    if (target){
+      target.classList.toggle('hidden');
     }
-    particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    
-    const material = new THREE.PointsMaterial({ color: 0xFFFFFF, size: 2 });
-    points = new THREE.Points(particles, material);
-    scene.add(points);
+  });
+});
 
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(container.offsetWidth, container.offsetHeight);
-    renderer.setClearColor(0x0652AB, 1);
-    container.appendChild(renderer.domElement);
-
-    document.addEventListener('mousemove', onDocumentMouseMove, false);
-    window.addEventListener('resize', onWindowResize, false);
-}
-
-function onWindowResize() {
-    const container = document.getElementById('interactive-bg');
-    if (container && container.offsetWidth > 0 && container.offsetHeight > 0) {
-        windowHalfX = window.innerWidth / 2;
-        windowHalfY = window.innerHeight / 2;
-        
-        camera.aspect = container.offsetWidth / container.offsetHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(container.offsetWidth, container.offsetHeight);
-    }
-}
-
-function onDocumentMouseMove(event) {
-    mouseX = event.clientX - windowHalfX;
-    mouseY = event.clientY - windowHalfY;
-}
-
-function animate() {
-    requestAnimationFrame(animate);
-    render();
-}
-
-function render() {
-    const time = Date.now() * 0.00005;
-    camera.position.x += (mouseX - camera.position.x) * 0.05;
-    camera.position.y += (-mouseY - camera.position.y) * 0.05;
-    camera.lookAt(scene.position);
-
-    points.rotation.x = time * 0.25;
-    points.rotation.y = time * 0.5;
-
-    renderer.render(scene, camera);
-}
-
-init();
-animate();
+// Ensure only active slide is visible initially (CSS fallback)
+slides.forEach((s,idx)=>{ s.style.display = (idx===0)?'flex':'none'; });
