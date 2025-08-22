@@ -67,7 +67,11 @@ Destaque 3 itens críticos e sugira plano de ação resumido.`,
 Assunto: Atualização do Item #102 (Alta prioridade)
 Mensagem: resumo do bloqueio, responsável, prazo e próximos passos. Tom profissional.`,
 `Sheets com Gemini — Dashboard de projeto
-Crie: tabela de tarefas, % concluído, fórmulas condicionais, gráfico de burndown, sem macros.`
+Crie: tabela de tarefas, % concluído, fórmulas condicionais, gráfico de burndown, sem macros.`,
+`Gemini — Comparar datasheets (obsoleto vs. atual)
+Gere tabela: Campo • Valor antigo • Valor novo • Impacto • Observações.`,
+`Gemini — Estimar consumo e custos (3 cenários)
+Mostre premissas, fórmulas e planilha com pessimista/base/otimista.`
 ];
 let demoIndex = 0;
 const demoEl = document.getElementById('demoPrompt');
