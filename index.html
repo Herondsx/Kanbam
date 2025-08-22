@@ -1,205 +1,337 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="scroll-smooth">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workshop de IA - Comau</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Workshop de IA – Comau (AICO & Gemini)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css"/>
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body>
+  <!-- Barra de progresso -->
+  <div id="progress"><span id="progress-fill"></span></div>
 
-    <header class="bg-white shadow-md sticky top-0 z-50 overflow-hidden">
-        <div id="interactive-bg"></div>
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <h1 class="text-3xl font-bold text-white">Workshop de IA na Comau</h1>
+  <!-- Controles fixos -->
+  <header class="topbar">
+    <div class="brand">
+      <img class="logo" src="logo_comau_branco.png" alt="COMAU" onerror="this.classList.add('hidden')">
+      <strong>Workshop de IA • Comau</strong>
+    </div>
+    <div class="controls">
+      <button class="btn ghost" data-action="prev" title="Anterior (←)">←</button>
+      <button class="btn primary" data-action="next" title="Próximo (→)">Próximo →</button>
+    </div>
+  </header>
+
+  <!-- Apresentação -->
+  <main id="deck" class="deck" tabindex="0" aria-live="polite">
+    <!-- SLIDE 1 – CAPA -->
+    <section class="slide cover" data-title="Capa">
+      <div class="bg-overlay"></div>
+      <img class="cover-img" src="cover_robot_cell.jpg" alt="Célula robótica" onerror="this.style.display='none'"/>
+      <div class="cover-content">
+        <h1>Inteligência Artificial na Comau</h1>
+        <h2>AICO (prioritária) &amp; Gemini (Workspace)</h2>
+        <p class="tagline">Como usar com segurança, produtividade e padronização</p>
+        <ul class="badges">
+          <li>Seguro</li>
+          <li>Produtivo</li>
+          <li>Padronizado</li>
+        </ul>
+        <small class="hint">Dica: use ← → ou clique nos botões para navegar</small>
+      </div>
+    </section>
+
+    <!-- SLIDE 2 – AGENDA -->
+    <section class="slide" data-title="Agenda">
+      <h2>Agenda</h2>
+      <ol class="agenda">
+        <li>O que é IA Generativa (e por que agora)</li>
+        <li>Linha do tempo (1956 → 2025)</li>
+        <li>Ferramentas aprovadas na Comau: <b>AICO</b> &amp; <b>Gemini</b></li>
+        <li>Prós, contras e quando usar cada uma</li>
+        <li>Boas práticas (segurança, privacidade e prompt)</li>
+        <li>Casos rápidos de automação do dia a dia</li>
+        <li>Demo guiada e próximos passos</li>
+      </ol>
+    </section>
+
+    <!-- SLIDE 3 – O que é IA -->
+    <section class="slide" data-title="O que é IA Generativa">
+      <h2>O que é IA Generativa?</h2>
+      <div class="two-col">
+        <div>
+          <p><b>Definição simples:</b> modelos que aprendem padrões e <u>geram</u> novas saídas (texto, imagem, código, planilhas, áudio, vídeo).</p>
+          <ul class="check">
+            <li>Entendem instruções em linguagem natural</li>
+            <li>Conectam-se a documentos e dados de trabalho</li>
+            <li>Ganham contexto, seguem regras e formatos</li>
+          </ul>
+          <p class="note">Na Comau, focamos em <b>uso corporativo</b> com ferramentas aprovadas e regras de segurança.</p>
         </div>
-    </header>
-    
-    <nav class="bg-gray-50 border-b border-gray-200 sticky top-[80px] z-40">
-        <div class="container mx-auto px-6 py-2 flex justify-center items-center">
-            <div class="flex space-x-6 text-sm font-medium">
-                 <a href="#intro" class="text-gray-600 hover:text-[--comau-blue]">Introdução</a>
-                 <a href="#ferramentas" class="text-gray-600 hover:text-[--comau-blue]">Apresentando as Ferramentas</a>
-                 <a href="#conceitos" class="text-gray-600 hover:text-[--comau-blue]">Conceitos</a>
-                 <a href="#exemplos" class="text-gray-600 hover:text-[--comau-blue]">Exemplos Práticos</a>
-                 <a href="#pesquisa" class="text-gray-600 hover:text-[--comau-blue]">Pesquisa Avançada</a>
-            </div>
+        <aside class="callout">
+          <h3>Por que agora?</h3>
+          <ul>
+            <li>Avanço de modelos de linguagem (Transformer, 2017)</li>
+            <li>Escala de dados e computação</li>
+            <li>Integração nativa ao trabalho (Gmail, Docs, Sheets)</li>
+          </ul>
+          <img src="timeline_ai.jpg" alt="Transformers e genAI" onerror="this.style.display='none'"/>
+        </aside>
+      </div>
+    </section>
+
+    <!-- SLIDE 4 – Linha do tempo -->
+    <section class="slide" data-title="Linha do tempo">
+      <h2>Linha do tempo (1956 → 2025)</h2>
+      <div class="timeline">
+        <div class="t-item"><span>1956</span> • Dartmouth — termo “Inteligência Artificial”</div>
+        <div class="t-item"><span>2017</span> • <i>Attention is All You Need</i> (Transformer)</div>
+        <div class="t-item"><span>2022</span> • ChatGPT torna IA generativa popular (lançamento público)</div>
+        <div class="t-item"><span>2023–24</span> • IA chega a e-mails, documentos, planilhas e slides</div>
+        <div class="t-item"><span>2025</span> • Gemini 2.x no Workspace; ChatGPT com novos fluxos (áudio, reuniões, search)</div>
+      </div>
+      <p class="footnote">Fontes na seção “Referências”.</p>
+    </section>
+
+    <!-- SLIDE 5 – Ferramentas aprovadas -->
+    <section class="slide" data-title="Ferramentas aprovadas">
+      <h2>Ferramentas aprovadas na Comau</h2>
+      <div class="cards">
+        <article class="card">
+          <img src="gemini_workspace_screenshot.png" alt="Gemini no Workspace" onerror="this.classList.add('fallback')" />
+          <h3>Gemini (Google Workspace)</h3>
+          <ul>
+            <li><b>Gmail:</b> “Ajude-me a escrever” (respostas, resumos)</li>
+            <li><b>Docs/Slides:</b> texto, estrutura, revisão e imagens conceituais</li>
+            <li><b>Sheets:</b> “Ajude-me a organizar” (tabelas, fórmulas, templates)</li>
+            <li><b>Admin:</b> proteções de dados empresariais e controles de acesso</li>
+          </ul>
+          <small>Incluído nos planos Workspace elegíveis (com proteções corporativas).</small>
+        </article>
+        <article class="card">
+          <img src="aico_interface_mock.png" alt="AICO (interno)" onerror="this.classList.add('fallback')" />
+          <h3>AICO (prioritária • interno)</h3>
+          <ul>
+            <li><b>Foco:</b> padrões, templates e conhecimento interno</li>
+            <li><b>Conformidade:</b> conteúdo alinhado a normas e formatos Comau</li>
+            <li><b>Segurança:</b> ambiente fechado para dados de projeto</li>
+            <li><b>Uso indicado:</b> documentos oficiais, DR/atas, relatórios padronizados</li>
+          </ul>
+          <small>Baseada em API de LLM; diretrizes internas se aplicam.</small>
+        </article>
+      </div>
+    </section>
+
+    <!-- SLIDE 6 – Quando usar cada uma -->
+    <section class="slide" data-title="Quando usar cada uma">
+      <h2>Quando usar cada uma?</h2>
+      <div class="grid-2">
+        <div class="panel good">
+          <h3>Use <span class="pill">AICO</span> quando…</h3>
+          <ul class="check">
+            <li>Precisa seguir <b>template/linguagem oficiais</b> (DR, atas, relatórios)</li>
+            <li>Documento envolve <b>informações internas</b> (projetos, clientes, custos)</li>
+            <li>Busca <b>padronização</b> e conformidade</li>
+          </ul>
         </div>
-    </nav>
-
-    <main class="container mx-auto px-6 py-12">
-
-        <section id="intro" class="section-card">
-            <h2 class="text-3xl font-bold mb-4" style="color: var(--comau-blue);">Introdução à Inteligência Artificial Generativa</h2>
-            <p class="text-lg mb-4">
-                A IA Generativa é uma tecnologia que cria conteúdo novo e original, como textos, imagens, planilhas e até vídeos. Na Comau, temos acesso a duas ferramentas poderosas: <strong>Gemini</strong>, integrado ao Google Workspace, e <strong>AICO</strong>, nosso assistente interno.
-            </p>
-            <p>
-                O objetivo deste workshop é demonstrar como essas ferramentas podem ser aplicadas para automatizar tarefas, otimizar processos e liberar nosso tempo para atividades de maior valor agregado, sempre dentro de um ambiente seguro e corporativo.
-            </p>
-        </section>
-
-        <section id="ferramentas" class="section-card">
-            <h2 class="text-3xl font-bold mb-6" style="color: var(--comau-blue);">Apresentando as Ferramentas: Gemini e AICO</h2>
-            
-            <div class="mb-8 p-6 rounded-lg bg-gray-50 border border-gray-200">
-                <h3 class="text-2xl font-bold mb-3 text-gray-900"><span class="pill">Google</span>Gemini: O Assistente Criativo e Analítico</h3>
-                <p class="mb-4">O Gemini é a nossa ferramenta multifuncional, integrada ao ecossistema Google. Ele se destaca pela sua versatilidade e capacidade de lidar com diferentes tipos de informação.</p>
-                
-                <div class="grid md:grid-cols-2 gap-6 mt-4">
-                    <div>
-                        <strong class="text-lg" style="color: var(--comau-blue);">Gemini no Workspace</strong>
-                        <p class="text-sm mt-1">Dentro das ferramentas que já usamos todos os dias:</p>
-                        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
-                            <li><strong>Gmail:</strong> Botão "Ajude-me a escrever" para criar e refinar e-mails.</li>
-                            <li><strong>Docs:</strong> Geração de textos, resumos e brainstorm de ideias.</li>
-                            <li><strong>Sheets:</strong> Botão "Ajude-me a organizar" para criar tabelas, fórmulas e templates automaticamente.</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <strong class="text-lg" style="color: var(--comau-blue);">Gemini com Mídia e Dados</strong>
-                        <p class="text-sm mt-1">Capacidades avançadas de análise e criação:</p>
-                        <ul class="list-disc list-inside space-y-1 mt-2 text-sm">
-                            <li><strong>Análise de Imagens:</strong> Extrai informações de fotos, diagramas e prints de tela.</li>
-                            <li><strong>Geração de Imagens:</strong> Cria imagens conceituais para apresentações e documentos.</li>
-                            <li><strong>Análise de Vídeos (YouTube):</strong> Gera resumos e localiza informações específicas em vídeos.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <div class="p-6 rounded-lg bg-gray-50 border border-gray-200">
-                <h3 class="text-2xl font-bold mb-3 text-gray-900"><span class="pill">Comau</span>AICO: O Especialista Interno</h3>
-                <p>A AICO é o nosso especialista focado no universo Comau. É a ferramenta de escolha para tarefas que exigem conformidade, precisão e conhecimento dos nossos processos e padrões internos.</p>
-                <ul class="list-disc list-inside space-y-1 mt-4 text-sm">
-                    <li><strong>Base de Conhecimento:</strong> Acessa e interpreta normas, manuais e templates oficiais da Comau.</li>
-                    <li><strong>Padronização:</strong> Garante que documentos como relatórios e atas sigam os formatos corretos.</li>
-                    <li><strong>Segurança Máxima:</strong> Opera em um ambiente fechado, ideal para lidar com informações de projetos.</li>
-                </ul>
-            </div>
-        </section>
-
-        <section id="conceitos" class="section-card">
-            <h2 class="text-3xl font-bold mb-4" style="color: var(--comau-blue);">Conceito do Chat Box: Treinando a IA</h2>
-            <p class="mb-4">
-                Pense em cada conversa com a IA como uma "sessão de treinamento". Quanto mais contexto você fornece, melhor e mais precisa será a resposta.
-            </p>
-            <ul class="list-disc list-inside space-y-2">
-                <li><strong>Contexto é Rei:</strong> A IA não "lembra" de outras conversas. Cada novo chat começa do zero. Forneça todo o contexto necessário dentro da mesma conversa.</li>
-                <li><strong>Refinamento Iterativo:</strong> Não espere a resposta perfeita na primeira tentativa. Use comandos como "Refine isso", "Adicione mais detalhes sobre X" ou "Seja mais formal" para ajustar o resultado.</li>
-                <li><strong>Forneça Referências (GEMs):</strong> No Gemini, você pode anexar arquivos (documentos, planilhas) para que a IA use como base. Isso é extremamente poderoso para tarefas como resumir documentos ou analisar dados específicos.</li>
-            </ul>
-        </section>
-
-        <section id="exemplos" class="section-card">
-            <h2 class="text-3xl font-bold mb-4" style="color: var(--comau-blue);">Exemplos Práticos no Dia a Dia</h2>
-            
-            <h3 class="text-2xl font-semibold mt-6 mb-2">Exemplo 1: Gerenciando uma Planilha de "Open Issues"</h3>
-            <p class="mb-4"><strong>Cenário:</strong> Você tem uma reunião de acompanhamento e precisa de um resumo rápido e de um e-mail para formalizar os pontos pendentes a partir de uma planilha.</p>
-            <div class="simulation-container">
-                <div class="prompt-window">
-                    <p class="font-bold text-blue-300 mb-2">&gt; Prompt para Gemini (com a planilha anexada):</p>
-                    <div id="prompt1" class="prompt-text"></div>
-                </div>
-                <div class="response-window">
-                    <div id="response1" class="response-content">
-                        <p class="font-bold mb-2">Assunto: Acompanhamento de Pendências - Projeto Robô Delta</p>
-                        <p>Prezados,</p>
-                        <p>Segue um resumo dos pontos em aberto discutidos em nossa última reunião, com base na planilha de "Open Issues":</p>
-                        <ul class="list-disc list-inside my-2">
-                            <li><strong>Item #102 (Alta Prioridade):</strong> A calibração do sensor de visão está pendente. O responsável é o João Silva e o prazo é 25/08/2025.</li>
-                            <li><strong>Item #105 (Média Prioridade):</strong> Falta a documentação final do gripper. A responsável é a Maria Almeida, com prazo para 30/08/2025.</li>
-                            <li><strong>Item #108 (Baixa Prioridade):</strong> A atualização do software de controle foi solicitada e aguarda aprovação.</li>
-                        </ul>
-                        <p>Por favor, foquem na resolução do item de alta prioridade. A planilha completa está disponível para consulta.</p>
-                        <p>Atenciosamente,</p>
-                    </div>
-                </div>
-                <div class="text-center mt-4">
-                    <button class="play-button" onclick="runSimulation(1)">▶ Simular Tarefa</button>
-                </div>
-            </div>
-
-            <h3 class="text-2xl font-semibold mt-8 mb-2">Exemplo 2: Criando uma Apresentação de Projeto</h3>
-            <p class="mb-4"><strong>Cenário:</strong> Você precisa criar rapidamente os slides para uma Ata de Design Review, seguindo o padrão da Comau e incluindo imagens conceituais.</p>
-            <div class="simulation-container">
-                <div class="prompt-window">
-                    <p class="font-bold text-blue-300 mb-2">&gt; Prompt para AICO (Conhecimento Institucional):</p>
-                    <div id="prompt2" class="prompt-text"></div>
-                </div>
-                <div class="response-window">
-                    <div id="response2" class="response-content">
-                        <p class="font-bold">Estrutura da Apresentação - Ata de Design Review (Template Comau TC-DR-001)</p>
-                        <ul class="list-disc list-inside mt-2">
-                            <li><strong>Slide 1:</strong> Título, Nome do Projeto, Data, Participantes</li>
-                            <li><strong>Slide 2:</strong> Agenda da Reunião</li>
-                            <li><strong>Slide 3:</strong> Sumário Executivo e Objetivos da DR</li>
-                            <li><strong>Slide 4:</strong> Arquitetura da Solução (Visão Geral)</li>
-                            <li><strong>Slide 5:</strong> Análise de Riscos e Pontos de Atenção</li>
-                            <li><strong>Slide 6:</strong> Próximos Passos e Plano de Ação</li>
-                        </ul>
-                        <p class="mt-4 font-bold">Sugestão de Imagem para o Slide 4 (gerada por IA):</p>
-                        <img src="https://placehold.co/600x300/e2e8f0/4a5568?text=Imagem+Conceitual+da+Célula+Robótica" alt="Imagem conceitual de uma célula robótica gerada por IA" class="mt-2 rounded-md w-full">
-                    </div>
-                </div>
-                <div class="text-center mt-4">
-                    <button class="play-button" onclick="runSimulation(2)">▶ Simular Tarefa</button>
-                </div>
-            </div>
-        </section>
-
-        <section id="pesquisa" class="section-card">
-            <h2 class="text-3xl font-bold mb-4" style="color: var(--comau-blue);">Exemplo de Pesquisa Avançada</h2>
-            <p class="mb-4"><strong>Cenário:</strong> A equipe de simulação precisa decidir sobre a atualização de um software. É necessário comparar a versão atual com a nova e pesquisar ferramentas de OLP (Offline Programming) concorrentes.</p>
-            <div class="simulation-container">
-                <div class="prompt-window">
-                    <p class="font-bold text-blue-300 mb-2">&gt; Prompt para Gemini (Pesquisa Web):</p>
-                    <div id="prompt3" class="prompt-text"></div>
-                </div>
-                <div class="response-window">
-                    <div id="response3" class="response-content">
-                        <p class="font-bold">Análise Comparativa: Process Simulate v23 vs v24 & Ferramentas OLP</p>
-                        <p class="font-semibold mt-2">1. Process Simulate: Novidades da v24</p>
-                        <ul class="list-disc list-inside">
-                            <li><strong>Melhoria de Performance:</strong> Carregamento de estudos grandes até 15% mais rápido.</li>
-                            <li><strong>Interface de Realidade Virtual (VR):</strong> Módulo nativo para validação imersiva.</li>
-                            <li><strong>Novas Bibliotecas:</strong> Suporte expandido para robôs colaborativos.</li>
-                        </ul>
-                        <p class="font-semibold mt-4">2. Comparativo de Ferramentas OLP</p>
-                        <table class="w-full text-sm text-left text-gray-500 mt-2">
-                            <thead class="text-xs text-gray-700 uppercase bg-gray-200">
-                                <tr><th class="px-4 py-2">Ferramenta</th><th class="px-4 py-2">Ponto Forte</th><th class="px-4 py-2">Ponto Fraco</th></tr>
-                            </thead>
-                            <tbody>
-                                <tr class="bg-white border-b"><td class="px-4 py-2 font-medium">RobotMaster</td><td class="px-4 py-2">Flexibilidade com CAD/CAM</td><td class="px-4 py-2">Curva de aprendizado</td></tr>
-                                <tr class="bg-gray-50 border-b"><td class="px-4 py-2 font-medium">Octopuz</td><td class="px-4 py-2">Simulação multi-robô</td><td class="px-4 py-2">Custo de licença</td></tr>
-                                <tr class="bg-white border-b"><td class="px-4 py-2 font-medium">Delfoi</td><td class="px-4 py-2">Especializado em solda/corte</td><td class="px-4 py-2">Menos versátil</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="text-center mt-4">
-                    <button class="play-button" onclick="runSimulation(3)">▶ Simular Tarefa</button>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <footer class="text-white mt-12 py-6" style="background-color: var(--comau-blue);">
-        <div class="container mx-auto text-center">
-            <p>&copy; 2025 Comau - Workshop de Inteligência Artificial</p>
+        <div class="panel info">
+          <h3>Use <span class="pill">Gemini</span> quando…</h3>
+          <ul class="check">
+            <li>Vai trabalhar no <b>Gmail/Docs/Sheets/Slides</b></li>
+            <li>Precisa de <b>pesquisa web</b> e reescrita rápida</li>
+            <li>Deseja <b>criar rascunhos</b> e refinar iterativamente</li>
+          </ul>
         </div>
-    </footer>
+      </div>
+      <div class="proscons">
+        <div>
+          <h4>Prós (Gemini)</h4>
+          <ul>
+            <li>Integrado ao Workspace; controles de segurança do Google</li>
+            <li>Criação e organização rápidas (e-mails, docs, planilhas)</li>
+          </ul>
+          <h4>Contras</h4>
+          <ul>
+            <li>Para conteúdo <b>sensível</b>, prefira AICO</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Prós (AICO)</h4>
+          <ul>
+            <li>Conformidade, vocabulário e <b>templates Comau</b></li>
+            <li>Uso seguro de dados internos</li>
+          </ul>
+          <h4>Contras</h4>
+          <ul>
+            <li>Menos recursos de pesquisa web/integrações externas</li>
+          </ul>
+        </div>
+      </div>
+    </section>
 
-    <script src="script.js"></script>
+    <!-- SLIDE 7 – Segurança e governança -->
+    <section class="slide" data-title="Segurança">
+      <h2>Segurança &amp; Governança</h2>
+      <div class="two-col">
+        <div>
+          <ul class="check">
+            <li><b>Dados sensíveis:</b> priorize AICO</li>
+            <li><b>Gemini (Workspace):</b> herda políticas e proteções da organização</li>
+            <li><b>Controle de acesso:</b> revisado por Administradores</li>
+            <li><b>Revisão humana:</b> toda saída deve ser conferida</li>
+          </ul>
+        </div>
+        <aside class="callout">
+          <h3>Boas práticas</h3>
+          <ol>
+            <li>Contexto suficiente no mesmo chat</li>
+            <li>Peça formato/estilo (tabela, ata, e-mail)</li>
+            <li>Itere: “refine”, “deixe mais técnico/formal”</li>
+          </ol>
+          <img src="data_protection.jpg" alt="Proteção de dados" onerror="this.style.display='none'"/>
+        </aside>
+      </div>
+      <p class="footnote">Vide políticas internas e referências públicas do Workspace.</p>
+    </section>
+
+    <!-- SLIDE 8 – Casos rápidos (lista do time) -->
+    <section class="slide" data-title="Casos práticos">
+      <h2>Casos práticos (baseados nas demandas do time)</h2>
+      <div class="grid-2">
+        <div class="case">
+          <h3>1) Ata de Reunião Técnica (DR)</h3>
+          <p><b>AICO</b>: gerar ata no <i>template Comau</i> com participantes, decisões, ações e imagens.</p>
+          <button class="btn demo" data-demo="#demo1">▶️ Ver prompt</button>
+          <pre id="demo1" class="prompt hidden">AICO, gere a ATA de DR usando o template oficial TC-DR-001.
+Projeto: Linha de Solda XYZ • Data: 22/08/2025
+Participantes: ...
+Decisões: ...
+Ações (responsável/prazo): ...
+Inclua resumo executivo e seção de riscos.</pre>
+        </div>
+
+        <div class="case">
+          <h3>2) “Open Issues” automático</h3>
+          <p><b>AICO</b> para padronizar campos; <b>Gemini</b> para rascunhar e consolidar do Gmail/Meet.</p>
+          <button class="btn demo" data-demo="#demo2">▶️ Ver prompt</button>
+          <pre id="demo2" class="prompt hidden">Gemini, a partir destes e-mails/copiar-colar da ata, liste os 10 itens em aberto no formato:
+ID • Descrição • Responsável • Prioridade • Prazo • Status
+Valide conflitos e destaque 3 críticos.</pre>
+        </div>
+
+        <div class="case">
+          <h3>3) Atualizar planilha de controle</h3>
+          <p><b>Gemini no Sheets</b>: “Ajude-me a organizar” para criar/atualizar fórmulas e dashboards.</p>
+          <button class="btn demo" data-demo="#demo3">▶️ Ver prompt</button>
+          <pre id="demo3" class="prompt hidden">No Sheets, crie um dashboard de projeto com:
+• Tabela de tarefas (status, responsável, prazo, %)
+• Gráfico de burndown
+• Validação de dados (Atrasado/No prazo)
+• Coluna de risco com fórmula condicional</pre>
+        </div>
+
+        <div class="case">
+          <h3>4) E-mail técnico</h3>
+          <p><b>Gemini no Gmail</b>: “Ajude-me a escrever” uma cobrança clara e objetiva.</p>
+          <button class="btn demo" data-demo="#demo4">▶️ Ver prompt</button>
+          <pre id="demo4" class="prompt hidden">Escreva um e-mail (tom profissional) cobrando atualização do item #102 (alta prioridade).
+Inclua: resumo do bloqueio, responsável, prazo e próximos passos.</pre>
+        </div>
+
+        <div class="case">
+          <h3>5) Benchmark técnico</h3>
+          <p><b>Gemini</b>: comparar releases de software e concorrentes OLP para decisão.</p>
+          <button class="btn demo" data-demo="#demo5">▶️ Ver prompt</button>
+          <pre id="demo5" class="prompt hidden">Compare Process Simulate (versões) e 3 ferramentas OLP (Robotmaster, Octopuz, Delfoi).
+Monte tabela com ponto forte/fraco e critérios de decisão.</pre>
+        </div>
+
+        <div class="case">
+          <h3>6) Planejamento de recursos</h3>
+          <p><b>AICO</b>: gerar cronograma padronizado (atividades × recursos × linha do tempo).</p>
+          <button class="btn demo" data-demo="#demo6">▶️ Ver prompt</button>
+          <pre id="demo6" class="prompt hidden">Gere um plano de atividades × recursos × linha do tempo para fase inicial do projeto.
+Formate conforme padrão Comau e entregue tabela editável.</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 9 – Boas práticas de prompt -->
+    <section class="slide" data-title="Boas práticas">
+      <h2>Boas práticas de <i>prompting</i></h2>
+      <div class="tips">
+        <div>
+          <h3>1) Contexto e objetivo</h3>
+          <p>Defina claramente <b>para quem</b>, <b>o quê</b> e <b>o formato</b> esperado.</p>
+        </div>
+        <div>
+          <h3>2) Regras e exemplos</h3>
+          <p>Inclua <b>regras de estilo</b> e um <b>exemplo curto</b> como referência.</p>
+        </div>
+        <div>
+          <h3>3) Iteração</h3>
+          <p>Peça <b>refinos</b>: “mais formal”, “com bullets”, “resumo executivo”.</p>
+        </div>
+        <div>
+          <h3>4) Verificação</h3>
+          <p>Revise tudo. IA auxilia; decisão final é humana.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 10 – Demo guiada -->
+    <section class="slide" data-title="Demo">
+      <h2>Demo guiada (simulação)</h2>
+      <div class="demo-box">
+        <div class="demo-header">Prompt</div>
+        <div class="demo-body">
+          <pre id="demoPrompt" class="typing"></pre>
+        </div>
+        <div class="demo-footer">
+          <button class="btn" id="btnType">▶️ Simular digitação</button>
+          <button class="btn ghost" id="btnSwap">↺ Trocar exemplo</button>
+        </div>
+      </div>
+      <div class="demo-note">Exemplos: Ata DR • Open Issues • E-mail técnico • Dashboard Sheets</div>
+    </section>
+
+    <!-- SLIDE 11 – Próximos passos -->
+    <section class="slide" data-title="Próximos passos">
+      <h2>Próximos passos</h2>
+      <ol class="agenda">
+        <li>Definir 3 fluxos-piloto (DR, Open Issues, Planilha-projeto)</li>
+        <li>Checklist de segurança (dados sensíveis → AICO)</li>
+        <li>Treino rápido de prompts + templates reutilizáveis</li>
+        <li>Métricas: tempo economizado e qualidade/aderência ao padrão</li>
+      </ol>
+    </section>
+
+    <!-- SLIDE 12 – Referências -->
+    <section class="slide" data-title="Referências">
+      <h2>Referências (públicas)</h2>
+      <ul class="refs">
+        <li>Google Workspace • <a href="https://support.google.com/a/answer/15706919" target="_blank">Privacidade do Gemini no Workspace</a></li>
+        <li>Workspace Blog • <a href="https://workspace.google.com/blog/ai-and-machine-learning/enterprise-security-controls-google-workspace-gemini" target="_blank">Controles de segurança para Gemini</a></li>
+        <li>Workspace Updates • <a href="https://workspaceupdates.googleblog.com/2025/04/configure-access-to-google-workspace-apps-in-gemini-ahead-of-general-availability.html" target="_blank">Admin: acesso a apps no Gemini</a></li>
+        <li>Google Blog • <a href="https://blog.google/technology/google-deepmind/gemini-model-updates-february-2025/" target="_blank">Gemini 2.0 (atualizações)</a></li>
+        <li>OpenAI • <a href="https://help.openai.com/en/articles/6825453-chatgpt-release-notes" target="_blank">ChatGPT – Release notes</a></li>
+        <li>Wikipedia • <a href="https://en.wikipedia.org/wiki/ChatGPT" target="_blank">História/linha do tempo do ChatGPT</a></li>
+      </ul>
+      <p class="footnote">AICO: informações internas (materiais corporativos). Use esta apresentação de forma confidencial.</p>
+    </section>
+
+    <!-- SLIDE 13 – Q&A -->
+    <section class="slide last" data-title="Q&A">
+      <h2>Q&A</h2>
+      <p>Obrigad@!<br><small>heron.souza@comau.com (exemplo)</small></p>
+      <img src="closing_image.jpg" alt="Imagem de encerramento" onerror="this.style.display='none'"/>
+    </section>
+  </main>
+
+  <!-- Navegação rápida por miniaturas -->
+  <nav id="thumbs" class="thumbs" aria-label="Miniaturas"></nav>
+
+  <script src="script.js"></script>
 </body>
 </html>
