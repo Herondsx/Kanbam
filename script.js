@@ -1,15 +1,10 @@
-// --- DOCUMENTAÇÃO DO SCRIPT ---
-// Este script gerencia um quadro Kanban interativo.
-// Funcionalidades:
-// 1. Adicionar, editar e excluir projetos (tarefas).
-// 2. Mover tarefas entre colunas (A Fazer, Em Andamento, Concluído) com drag-and-drop.
-// 3. Salvar o estado do quadro no Local Storage do navegador para persistência de dados.
-// 4. Calcular e exibir o status do prazo (normal, aviso, perigo).
-
 document.addEventListener('DOMContentLoaded', () => {
     // --- SELEÇÃO DE ELEMENTOS DO DOM ---
     const addTaskBtn = document.getElementById('add-task-btn');
-    const modal = document.getElementById('task-modal');
+    const columns = document.querySelectorAll('.tasks-container');
+
+    // Modal de Edição/Criação
+    const taskModal = document.getElementById('task-modal');
     const modalCloseBtn = document.getElementById('modal-close-btn');
     const taskForm = document.getElementById('task-form');
     const modalTitle = document.getElementById('modal-title');
@@ -17,107 +12,103 @@ document.addEventListener('DOMContentLoaded', () => {
     const taskNameInput = document.getElementById('task-name');
     const taskDescriptionInput = document.getElementById('task-description');
     const taskDeadlineInput = document.getElementById('task-deadline');
-    const columns = document.querySelectorAll('.tasks-container');
+    const taskStatusInput = document.getElementById('task-status');
+    const taskProgressInput = document.getElementById('task-progress');
+    const progressValueSpan = document.getElementById('progress-value');
+
+    // Modal de Detalhes
+    const detailsModal = document.getElementById('details-modal');
+    const detailsCloseBtn = document.getElementById('details-close-btn');
+    const detailsTitle = document.getElementById('details-title');
+    const detailsDescription = document.getElementById('details-description');
+    const detailsDeadline = document.getElementById('details-deadline');
+    const detailsProgressBar = document.getElementById('details-progress-bar');
+    const detailsProgressText = document.getElementById('details-progress-text');
+
 
     // --- ESTADO DA APLICAÇÃO ---
-    // Carrega as tarefas do Local Storage ou inicia um array vazio.
     let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
 
     // --- FUNÇÕES ---
 
-    /**
-     * Salva o array de tarefas no Local Storage.
-     * Converte o array de objetos para uma string JSON.
-     */
     const saveTasks = () => {
         localStorage.setItem('tasks', JSON.stringify(tasks));
     };
 
-    /**
-     * Renderiza todas as tarefas no quadro Kanban.
-     * Limpa as colunas e recria os cartões de tarefa a partir do array 'tasks'.
-     */
     const renderTasks = () => {
-        // Limpa todas as colunas antes de renderizar
         columns.forEach(column => column.innerHTML = '');
 
-        // Cria e insere o cartão para cada tarefa
         tasks.forEach(task => {
             const taskCard = document.createElement('div');
-            taskCard.className = 'task-card';
+            taskCard.className = `task-card status-${task.status}`;
             taskCard.draggable = true;
             taskCard.dataset.id = task.id;
 
             const deadlineInfo = getDeadlineInfo(task.deadline);
-            taskCard.classList.add(deadlineInfo.class);
 
             taskCard.innerHTML = `
                 <h3>${task.name}</h3>
-                <p>${task.description}</p>
+                <p>${task.description || 'Sem descrição.'}</p>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: ${task.progress}%;"></div>
+                </div>
                 <div class="task-footer">
                     <span class="task-deadline">
-                        <i class="fas fa-clock ${deadlineInfo.class}"></i> ${deadlineInfo.text}
+                        <i class="fas fa-clock"></i> ${deadlineInfo.text}
                     </span>
                     <div class="task-actions">
-                        <button class="edit-btn"><i class="fas fa-edit"></i></button>
-                        <button class="delete-btn"><i class="fas fa-trash"></i></button>
+                        <button class="edit-btn" title="Editar"><i class="fas fa-edit"></i></button>
+                        <button class="delete-btn" title="Apagar"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
             `;
-
-            // Adiciona o cartão à coluna correta
             document.querySelector(`.tasks-container[data-status="${task.status}"]`).appendChild(taskCard);
         });
 
-        // Adiciona os event listeners novamente após renderizar
         addEventListenersToCards();
     };
 
-    /**
-     * Calcula a diferença de dias para o prazo e retorna uma classe e texto.
-     * @param {string} deadlineString - A data do prazo no formato 'YYYY-MM-DD'.
-     * @returns {object} - Um objeto com a classe CSS e o texto para o prazo.
-     */
     const getDeadlineInfo = (deadlineString) => {
-        if (!deadlineString) return { class: 'deadline-normal', text: 'Sem prazo' };
+        if (!deadlineString) return { text: 'Sem prazo' };
         
-        const deadline = new Date(deadlineString + 'T23:59:59'); // Considera o fim do dia
+        const deadline = new Date(deadlineString + 'T23:59:59');
         const today = new Date();
         const diffTime = deadline - today;
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-        if (diffDays < 0) {
-            return { class: 'deadline-danger', text: `Atrasado ${Math.abs(diffDays)} dia(s)` };
-        }
-        if (diffDays === 0) {
-            return { class: 'deadline-danger', text: 'Termina hoje!' };
-        }
-        if (diffDays <= 3) {
-            return { class: 'deadline-warning', text: `Faltam ${diffDays} dia(s)` };
-        }
-        return { class: 'deadline-normal', text: `Faltam ${diffDays} dia(s)` };
+        if (diffDays < 0) return { text: `Atrasado ${Math.abs(diffDays)} dia(s)` };
+        if (diffDays === 0) return { text: 'Termina hoje!' };
+        if (diffDays <= 3) return { text: `Faltam ${diffDays} dia(s)` };
+        return { text: `Faltam ${diffDays} dia(s)` };
     };
     
-    /**
-     * Adiciona os event listeners para os botões de editar/excluir e para o drag-and-drop.
-     */
     const addEventListenersToCards = () => {
-        const taskCards = document.querySelectorAll('.task-card');
-        taskCards.forEach(card => {
-            // Drag and Drop
+        document.querySelectorAll('.task-card').forEach(card => {
             card.addEventListener('dragstart', handleDragStart);
             card.addEventListener('dragend', handleDragEnd);
 
-            // Botões
-            card.querySelector('.edit-btn').addEventListener('click', () => openModal(card.dataset.id));
-            card.querySelector('.delete-btn').addEventListener('click', () => deleteTask(card.dataset.id));
+            // Abre detalhes ao clicar no card
+            card.addEventListener('click', (e) => {
+                openDetailsModal(card.dataset.id);
+            });
+
+            const editBtn = card.querySelector('.edit-btn');
+            const deleteBtn = card.querySelector('.delete-btn');
+            
+            // Impede que o clique nos botões propague para o card
+            editBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openModal(card.dataset.id);
+            });
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                deleteTask(card.dataset.id);
+            });
         });
     };
 
-    /**
-     * Abre o modal, seja para criar uma nova tarefa ou editar uma existente.
-     * @param {string|null} taskId - O ID da tarefa a ser editada, ou null para criar uma nova.
-     */
+    // --- LÓGICA DO MODAL DE EDIÇÃO/CRIAÇÃO ---
+
     const openModal = (taskId = null) => {
         taskForm.reset();
         if (taskId) {
@@ -127,42 +118,40 @@ document.addEventListener('DOMContentLoaded', () => {
             taskNameInput.value = task.name;
             taskDescriptionInput.value = task.description;
             taskDeadlineInput.value = task.deadline;
+            taskStatusInput.value = task.status;
+            taskProgressInput.value = task.progress;
+            progressValueSpan.textContent = `${task.progress}%`;
         } else {
             modalTitle.textContent = 'Adicionar Novo Projeto';
             taskIdInput.value = '';
+            taskProgressInput.value = 0;
+            progressValueSpan.textContent = '0%';
+            taskStatusInput.value = 'ideas'; // Padrão para novas tarefas
         }
-        modal.classList.add('show');
+        taskModal.classList.add('show');
     };
 
-    /**
-     * Fecha o modal.
-     */
     const closeModal = () => {
-        modal.classList.remove('show');
+        taskModal.classList.remove('show');
     };
 
-    /**
-     * Lida com o envio do formulário do modal (criar/editar tarefa).
-     * @param {Event} e - O evento de submit do formulário.
-     */
     const handleFormSubmit = (e) => {
         e.preventDefault();
         const id = taskIdInput.value;
         const taskData = {
-            name: taskNameInput.value,
-            description: taskDescriptionInput.value,
+            name: taskNameInput.value.trim(),
+            description: taskDescriptionInput.value.trim(),
             deadline: taskDeadlineInput.value,
+            status: taskStatusInput.value,
+            progress: parseInt(taskProgressInput.value, 10),
         };
 
         if (id) {
-            // Editar tarefa existente
             const taskIndex = tasks.findIndex(t => t.id === id);
             tasks[taskIndex] = { ...tasks[taskIndex], ...taskData };
         } else {
-            // Criar nova tarefa
             tasks.push({
                 id: Date.now().toString(),
-                status: 'todo', // Novas tarefas sempre começam em "A Fazer"
                 ...taskData
             });
         }
@@ -172,10 +161,6 @@ document.addEventListener('DOMContentLoaded', () => {
         closeModal();
     };
 
-    /**
-     * Exclui uma tarefa.
-     * @param {string} taskId - O ID da tarefa a ser excluída.
-     */
     const deleteTask = (taskId) => {
         if (confirm('Tem certeza que deseja excluir este projeto?')) {
             tasks = tasks.filter(t => t.id !== taskId);
@@ -183,11 +168,29 @@ document.addEventListener('DOMContentLoaded', () => {
             renderTasks();
         }
     };
+    
+    // --- LÓGICA DO MODAL DE DETALHES ---
+
+    const openDetailsModal = (taskId) => {
+        const task = tasks.find(t => t.id === taskId);
+        if (!task) return;
+
+        detailsTitle.textContent = task.name;
+        detailsDescription.textContent = task.description || "Este projeto não possui uma descrição detalhada.";
+        detailsDeadline.innerHTML = `<i class="fas fa-calendar-alt"></i> Prazo: ${task.deadline ? new Date(task.deadline + 'T23:59:59').toLocaleDateString('pt-BR') : 'Não definido'}`;
+        detailsProgressBar.style.width = `${task.progress}%`;
+        detailsProgressText.textContent = `${task.progress}% concluído`;
+        detailsModal.classList.add('show');
+    };
+    
+    const closeDetailsModal = () => {
+        detailsModal.classList.remove('show');
+    };
 
     // --- LÓGICA DE DRAG AND DROP ---
     let draggedItemId = null;
 
-    function handleDragStart(e) {
+    function handleDragStart() {
         draggedItemId = this.dataset.id;
         setTimeout(() => this.classList.add('dragging'), 0);
     }
@@ -211,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const newStatus = column.dataset.status;
             const task = tasks.find(t => t.id === draggedItemId);
-            if (task) {
+            if (task && task.status !== newStatus) {
                 task.status = newStatus;
                 saveTasks();
                 renderTasks();
@@ -221,10 +224,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- EVENT LISTENERS INICIAIS ---
     addTaskBtn.addEventListener('click', () => openModal());
-    modalCloseBtn.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal(); // Fecha se clicar fora do conteúdo
+    taskProgressInput.addEventListener('input', (e) => {
+        progressValueSpan.textContent = `${e.target.value}%`;
     });
+    
+    // Listeners para fechar modais
+    modalCloseBtn.addEventListener('click', closeModal);
+    taskModal.addEventListener('click', (e) => {
+        if (e.target === taskModal) closeModal();
+    });
+    detailsCloseBtn.addEventListener('click', closeDetailsModal);
+    detailsModal.addEventListener('click', (e) => {
+        if (e.target === detailsModal) closeDetailsModal();
+    });
+
     taskForm.addEventListener('submit', handleFormSubmit);
 
     // --- INICIALIZAÇÃO ---
