@@ -1,496 +1,63 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Workshop de IA – Comau (AICO & Gemini)</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Projetos de TI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Barra de progresso -->
-  <div id="progress"><span id="progress-fill"></span></div>
 
-  <!-- Controles fixos -->
-  <header class="topbar">
-    <div class="brand">
-      <img class="logo" src="logo_comau_branco.png" alt="COMAU" onerror="this.classList.add('hidden')">
-      <strong>Workshop de IA • Comau</strong>
+    <div class="app-container">
+        <header>
+            <h1>Meu Kanban de Projetos</h1>
+            <button id="add-task-btn"><i class="fas fa-plus"></i> Adicionar Novo Projeto</button>
+        </header>
+
+        <main class="kanban-board">
+            <div class="kanban-column" id="todo" data-status="todo">
+                <h2><i class="fas fa-list-check"></i> A Fazer</h2>
+                <div class="tasks-container" data-status="todo"></div>
+            </div>
+
+            <div class="kanban-column" id="inprogress" data-status="inprogress">
+                <h2><i class="fas fa-person-digging"></i> Em Andamento</h2>
+                <div class="tasks-container" data-status="inprogress"></div>
+            </div>
+
+            <div class="kanban-column" id="done" data-status="done">
+                <h2><i class="fas fa-flag-checkered"></i> Concluído</h2>
+                <div class="tasks-container" data-status="done"></div>
+            </div>
+        </main>
     </div>
-    <div class="controls">
-      <button class="btn ghost" data-action="prev" title="Anterior (←)">←</button>
-      <button class="btn primary" data-action="next" title="Próximo (→)">Próximo →</button>
+
+    <div id="task-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 id="modal-title">Adicionar Novo Projeto</h2>
+            <form id="task-form">
+                <input type="hidden" id="task-id">
+                <div class="form-group">
+                    <label for="task-name">Nome do Projeto/Ferramenta</label>
+                    <input type="text" id="task-name" required placeholder="Ex: Implementar novo sistema de login">
+                </div>
+                <div class="form-group">
+                    <label for="task-description">Descrição</label>
+                    <textarea id="task-description" rows="3" placeholder="Ex: Usar autenticação OAuth 2.0..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="task-deadline">Prazo Final</label>
+                    <input type="date" id="task-deadline" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn-save">Salvar</button>
+                    <button type="button" id="modal-close-btn" class="btn-cancel">Cancelar</button>
+                </div>
+            </form>
+        </div>
     </div>
-  </header>
 
-  <!-- Apresentação -->
-  <main id="deck" class="deck" tabindex="0" aria-live="polite">
-    <!-- SLIDE 1 – CAPA -->
-    <section class="slide cover" data-title="Capa">
-      <div class="bg-overlay"></div>
-      <img class="cover-img" src="cover_robot_cell.jpg" alt="Célula robótica" onerror="this.style.display='none'"/>
-      <div class="cover-content">
-        <h1>Inteligência Artificial na Comau</h1>
-        <h2>AICO (prioritária) &amp; Gemini (Workspace)</h2>
-        <p class="tagline">Como usar com segurança, produtividade e padronização</p>
-        <ul class="badges">
-          <li>Seguro</li>
-          <li>Produtivo</li>
-          <li>Padronizado</li>
-        </ul>
-        <small class="hint">Dica: use ← → ou clique nos botões para navegar</small>
-      </div>
-    </section>
-
-    <!-- SLIDE 2 – AGENDA -->
-    <section class="slide" data-title="Agenda">
-      <h2>Agenda</h2>
-      <ol class="agenda">
-        <li>O que é IA Generativa (e por que agora)</li>
-        <li>Linha do tempo (1956 → 2025) + do ChatGPT ao Gemini</li>
-        <li>Ferramentas aprovadas: <b>AICO</b> &amp; <b>Gemini</b></li>
-        <li>Uso recomendado, prós/limites e decisão</li>
-        <li>Segurança, governança e boas práticas</li>
-        <li>Casos práticos do time (exemplos reais)</li>
-        <li>Demo guiada, exercícios e próximos passos</li>
-        <li>Referências e Q&A</li>
-      </ol>
-    </section>
-
-    <!-- SLIDE 3 – O que é IA -->
-    <section class="slide" data-title="O que é IA Generativa">
-      <h2>O que é IA Generativa?</h2>
-      <div class="two-col">
-        <div>
-          <p><b>Definição simples:</b> modelos que aprendem padrões em grandes volumes de dados e <u>geram</u> novas saídas (texto, imagem, código, planilhas, áudio, vídeo).</p>
-          <ul class="check">
-            <li>Entendem instruções em linguagem natural</li>
-            <li>Conectam-se a documentos e dados corporativos</li>
-            <li>Seguem <b>formatos e regras</b> quando instruídos</li>
-          </ul>
-          <p class="note">Na Comau, focamos no <b>uso corporativo</b> com ferramentas aprovadas e políticas de segurança.</p>
-        </div>
-        <aside class="callout">
-          <h3>Por que agora?</h3>
-          <ul>
-            <li>Arquitetura Transformer popularizou IAs de propósito geral</li>
-            <li>Dados + computação em larga escala</li>
-            <li>Integração nativa ao trabalho (Gmail, Docs, Sheets, Slides)</li>
-          </ul>
-        </aside>
-      </div>
-    </section>
-
-    <!-- SLIDE 4 – Como funciona (bem por alto) -->
-    <section class="slide" data-title="Como funciona (alto nível)">
-      <h2>Como funciona (alto nível)</h2>
-      <div class="two-col">
-        <div>
-          <ol class="agenda">
-            <li><b>Entrada:</b> seu prompt (objetivo + contexto + formato)</li>
-            <li><b>Modelo:</b> prediz tokens prováveis (texto, código etc.)</li>
-            <li><b>Ferramentas:</b> acesso a dados/docs (quando permitido)</li>
-            <li><b>Saída:</b> rascunho que você revisa e refina</li>
-          </ol>
-          <p class="footnote">Sempre faça revisão humana — a IA pode errar ou alucinar.</p>
-        </div>
-        <div class="callout">
-          <h3>Padrão de prompt (CRISP)</h3>
-          <ul>
-            <li><b>C</b>onteúdo: o que precisa</li>
-            <li><b>R</b>egras: tom, formato, limites</li>
-            <li><b>I</b>nsumos: anexos/links/dados</li>
-            <li><b>S</b>eletores: exemplos de saída</li>
-            <li><b>P</b>róximos passos: “revise”, “resuma”, “formate”</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- SLIDE 5 – Linha do tempo -->
-    <section class="slide" data-title="Linha do tempo">
-      <h2>Linha do tempo (1956 → 2025)</h2>
-      <div class="timeline">
-        <div class="t-item"><span>1956</span> Dartmouth introduz o termo “Inteligência Artificial”.</div>
-        <div class="t-item"><span>2017</span> Transformer — base dos modelos modernos de linguagem.</div>
-        <div class="t-item"><span>2022</span> ChatGPT populariza IA generativa para o público.</div>
-        <div class="t-item"><span>2023–2024</span> Integração em e-mails, documentos, planilhas e slides.</div>
-        <div class="t-item"><span>2025</span> Workflows corporativos com Gemini no Workspace e AICOs internas.</div>
-      </div>
-      <p class="footnote">Detalhes e links em “Referências”.</p>
-    </section>
-
-    <!-- SLIDE 6 – Do ChatGPT ao Gemini (2025) -->
-    <section class="slide" data-title="Evolução recente">
-      <h2>Da popularização do ChatGPT ao Gemini no Workspace</h2>
-      <ul>
-        <li><b>ChatGPT</b> mostrou o potencial de conversas com IA para qualquer pessoa.</li>
-        <li><b>Ambiente corporativo:</b> necessidade de segurança, auditoria e padronização.</li>
-        <li><b>Gemini (Workspace):</b> recursos “Ajude-me a escrever/organizar” dentro de Gmail/Docs/Sheets/Slides, com controles administrativos.</li>
-        <li><b>AICO (Comau):</b> prioriza conformidade, templates e linguagem da empresa em ambiente fechado.</li>
-      </ul>
-    </section>
-
-    <!-- SLIDE 7 – Ferramentas aprovadas (overview) -->
-    <section class="slide" data-title="Ferramentas aprovadas">
-      <h2>Ferramentas aprovadas na Comau</h2>
-      <div class="cards">
-        <article class="card">
-          <img src="gemini_workspace_screenshot.png" alt="Gemini no Workspace" onerror="this.classList.add('fallback')" />
-          <h3>Gemini (Google Workspace)</h3>
-          <ul>
-            <li><b>Gmail:</b> “Ajude-me a escrever” (respostas, resumos, cobranças)</li>
-            <li><b>Docs/Slides:</b> estrutura de documentos, revisão e imagens conceituais</li>
-            <li><b>Sheets:</b> “Ajude-me a organizar” (tabelas, fórmulas, validações, templates)</li>
-            <li><b>Admin:</b> controles de dados e políticas da organização</li>
-          </ul>
-        </article>
-        <article class="card">
-          <img src="aico_interface_mock.png" alt="AICO (interno)" onerror="this.classList.add('fallback')" />
-          <h3>AICO (prioritária • interno)</h3>
-          <ul>
-            <li><b>Foco:</b> padrões e conhecimento institucional</li>
-            <li><b>Conformidade:</b> vocabulário, templates e formatos Comau</li>
-            <li><b>Segurança:</b> ambiente fechado para dados de projeto</li>
-            <li><b>Uso:</b> DR/atas, relatórios, listas e documentos oficiais</li>
-          </ul>
-        </article>
-      </div>
-    </section>
-
-    <!-- SLIDE 8 – AICO (deep dive) -->
-    <section class="slide" data-title="AICO em detalhes">
-      <h2>AICO em detalhes</h2>
-      <div class="two-col">
-        <div>
-          <h3>Onde brilha</h3>
-          <ul class="check">
-            <li>Geração de <b>documentos padronizados</b> (DR, atas, relatórios)</li>
-            <li><b>Sigilo</b> de informações sensíveis de projeto</li>
-            <li>Tom e <b>linguagem corporativa</b> consistentes</li>
-          </ul>
-        </div>
-        <div class="callout">
-          <h3>Limites práticos</h3>
-          <ul>
-            <li>Menos foco em pesquisa web ou integrações externas</li>
-            <li>Precisa de <b>insumos internos</b> (templates, dados, briefing)</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- SLIDE 9 – Gemini (deep dive) -->
-    <section class="slide" data-title="Gemini em detalhes">
-      <h2>Gemini no Workspace (detalhes)</h2>
-      <div class="two-col">
-        <div>
-          <h3>Onde brilha</h3>
-          <ul class="check">
-            <li>Rascunhos rápidos no <b>Gmail/Docs/Sheets/Slides</b></li>
-            <li>Reescrita, resumo, organização e validações</li>
-            <li>Criação de <b>dashboards</b> e fórmulas no Sheets</li>
-          </ul>
-        </div>
-        <div class="callout">
-          <h3>Limites práticos</h3>
-          <ul>
-            <li>Para conteúdo <b>muito sensível</b>, prefira AICO</li>
-            <li>Revisão humana sempre necessária</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- SLIDE 10 – Quando usar cada uma -->
-    <section class="slide" data-title="Decisão">
-      <h2>Quando usar cada uma?</h2>
-      <div class="grid-2">
-        <div class="panel good">
-          <h3>Use <span class="pill">AICO</span> quando…</h3>
-          <ul class="check">
-            <li>Precisa seguir <b>template/linguagem oficiais</b> (DR, atas, relatórios)</li>
-            <li>Documento envolve <b>informações internas</b> (projetos/clientes)</li>
-            <li>Busca <b>padronização</b> e conformidade</li>
-          </ul>
-        </div>
-        <div class="panel info">
-          <h3>Use <span class="pill">Gemini</span> quando…</h3>
-          <ul class="check">
-            <li>Vai trabalhar no <b>Gmail/Docs/Sheets/Slides</b></li>
-            <li>Precisa de <b>reescrita</b>, <b>resumo</b> e <b>organização</b> rápidos</li>
-            <li>Deseja <b>criar rascunhos</b> e refinar iterativamente</li>
-          </ul>
-        </div>
-      </div>
-      <div class="proscons">
-        <div>
-          <h4>Prós (Gemini)</h4>
-          <ul>
-            <li>Integração nativa ao Workspace</li>
-            <li>Agilidade em rascunhos, planilhas e apresentações</li>
-          </ul>
-          <h4>Contras</h4>
-          <ul>
-            <li>Evite dados sensíveis: prefira AICO</li>
-          </ul>
-        </div>
-        <div>
-          <h4>Prós (AICO)</h4>
-          <ul>
-            <li>Conformidade e <b>vocabulário Comau</b></li>
-            <li>Segurança para dados de projeto</li>
-          </ul>
-          <h4>Contras</h4>
-          <ul>
-            <li>Menor foco em pesquisa web</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- SLIDE 11 – Segurança e governança -->
-    <section class="slide" data-title="Segurança">
-      <h2>Segurança &amp; Governança</h2>
-      <div class="two-col">
-        <div>
-          <ul class="check">
-            <li><b>Dados sensíveis:</b> priorize AICO</li>
-            <li><b>Gemini (Workspace):</b> herda políticas/admin da organização</li>
-            <li><b>Controle de acesso:</b> compartilhamentos só com quem deve</li>
-            <li><b>Revisão humana:</b> toda saída deve ser conferida</li>
-          </ul>
-        </div>
-        <aside class="callout">
-          <h3>Boas práticas</h3>
-          <ol>
-            <li>Contexto suficiente no mesmo chat</li>
-            <li>Especifique <b>formato</b> (tabela, ata, e-mail, slide)</li>
-            <li>Itere: “refine”, “deixe mais técnico/formal”, “resuma”</li>
-          </ol>
-        </aside>
-      </div>
-      <p class="footnote">Siga as políticas internas e use o bom senso: “privacidade por padrão”.</p>
-    </section>
-
-    <!-- SLIDE 12 – Boas práticas de prompt -->
-    <section class="slide" data-title="Boas práticas">
-      <h2>Boas práticas de <i>prompting</i></h2>
-      <div class="tips">
-        <div>
-          <h3>1) Contexto e objetivo</h3>
-          <p>Diga <b>para quem</b>, <b>o quê</b> e <b>o formato</b> (ex.: “ata TC-DR-001”).</p>
-        </div>
-        <div>
-          <h3>2) Regras e exemplos</h3>
-          <p>Estilo, tom, seções obrigatórias e um <b>mini-exemplo</b> de saída.</p>
-        </div>
-        <div>
-          <h3>3) Iteração</h3>
-          <p>Peça versões e compare. “Faça 3 variações e destaque diferenças”.</p>
-        </div>
-        <div>
-          <h3>4) Verificação</h3>
-          <p>Cheque nomes, datas, números e anexos. <b>Você</b> é o auditor final.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- SLIDE 13 – Casos práticos (origem: demandas do time) -->
-    <section class="slide" data-title="Casos práticos">
-      <h2>Casos práticos (baseados nas demandas do time)</h2>
-      <p>Exemplos simples e úteis usando AICO e/ou Gemini:</p>
-      <div class="grid-2">
-        <div class="case">
-          <h3>1) Ata de Reunião Técnica (DR)</h3>
-          <p><b>AICO</b>: gerar ata no <i>template Comau</i> com participantes, decisões, ações e imagens.</p>
-          <button class="btn demo" data-demo="#demo1">▶️ Ver prompt</button>
-          <pre id="demo1" class="prompt hidden">AICO, gere a ATA de DR no template oficial TC-DR-001.
-Projeto: Linha de Solda XYZ • Data: 22/08/2025
-Participantes: ...
-Decisões: ...
-Ações (responsável/prazo): ...
-Inclua resumo executivo e seção de riscos.</pre>
-        </div>
-
-        <div class="case">
-          <h3>2) “Open Issues” automático</h3>
-          <p><b>AICO</b> para padronizar campos; <b>Gemini</b> para consolidar e-mails/Meet.</p>
-          <button class="btn demo" data-demo="#demo2">▶️ Ver prompt</button>
-          <pre id="demo2" class="prompt hidden">Gemini, a partir destes e-mails/anotações, liste 10 itens em aberto:
-ID • Descrição • Responsável • Prioridade • Prazo • Status
-Valide conflitos e destaque 3 críticos.</pre>
-        </div>
-
-        <div class="case">
-          <h3>3) Atualizar planilha de controle</h3>
-          <p><b>Gemini no Sheets</b>: “Ajude-me a organizar” (fórmulas, validações, dashboard).</p>
-          <button class="btn demo" data-demo="#demo3">▶️ Ver prompt</button>
-          <pre id="demo3" class="prompt hidden">No Sheets, crie um dashboard de projeto com:
-• Tabela de tarefas (status, responsável, prazo, %)
-• Gráfico de burndown
-• Validação (Atrasado/No prazo)
-• Coluna de risco com fórmula condicional</pre>
-        </div>
-
-        <div class="case">
-          <h3>4) Apontamento de horas</h3>
-          <p><b>Gemini</b>: gerar/validar lançamentos a partir de um resumo semanal.</p>
-          <button class="btn demo" data-demo="#demo4">▶️ Ver prompt</button>
-          <pre id="demo4" class="prompt hidden">Gemini, com base neste resumo, gere os lançamentos na planilha:
-Data • Projeto • Atividade • Horas • Observações
-Alerte inconsistências (ex.: > 10h/dia).</pre>
-        </div>
-
-        <div class="case">
-          <h3>5) Pull&amp;Send → Sheets</h3>
-          <p><b>Gemini</b>: organizar dados recebidos em planilha padrão.</p>
-          <button class="btn demo" data-demo="#demo5">▶️ Ver prompt</button>
-          <pre id="demo5" class="prompt hidden">Padronize estes dados no formato:
-Data • Origem • Descrição • Responsável • Status • Link
-Crie planilha e valide duplicidades.</pre>
-        </div>
-
-        <div class="case">
-          <h3>6) Benchmark técnico</h3>
-          <p><b>Gemini</b>: comparar releases de software e concorrentes OLP.</p>
-          <button class="btn demo" data-demo="#demo6">▶️ Ver prompt</button>
-          <pre id="demo6" class="prompt hidden">Compare Process Simulate (vX vs vY) e 3 OLPs (Robotmaster, Octopuz, Delfoi).
-Monte tabela com ponto forte/fraco e critérios de decisão.</pre>
-        </div>
-
-        <div class="case">
-          <h3>7) Pesquisa de catálogos/manuais</h3>
-          <p><b>Gemini</b>: consolidar especificações e gerar tabela comparativa.</p>
-          <button class="btn demo" data-demo="#demo7">▶️ Ver prompt</button>
-          <pre id="demo7" class="prompt hidden">Extraia de catálogos/manuais:
-Modelo • Capacidade • Alcance • Requisitos • Observações
-Aponte lacunas e dúvidas para o fornecedor.</pre>
-        </div>
-
-        <div class="case">
-          <h3>8) E-mails técnicos</h3>
-          <p><b>Gemini no Gmail</b>: rascunho de cobrança/atualização com tom profissional.</p>
-          <button class="btn demo" data-demo="#demo8">▶️ Ver prompt</button>
-          <pre id="demo8" class="prompt hidden">Escreva um e-mail cobrando atualização do item #102 (alta prioridade):
-• Bloqueio • Responsável • Prazo • Próximos passos
-Inclua assunto e bullets objetivos.</pre>
-        </div>
-
-        <div class="case">
-          <h3>9) Datasheets obsoletos</h3>
-          <p><b>Gemini</b>: comparar especificações antigas vs. atuais e destacar mudanças.</p>
-          <button class="btn demo" data-demo="#demo9">▶️ Ver prompt</button>
-          <pre id="demo9" class="prompt hidden">Compare dados dos datasheets (antigo vs. novo):
-Campo • Valor antigo • Valor novo • Impacto • Observações
-Aponte riscos de compatibilidade.</pre>
-        </div>
-
-        <div class="case">
-          <h3>10) Consumo e custos</h3>
-          <p><b>Gemini</b>: estimativas com premissas e fórmulas auditáveis.</p>
-          <button class="btn demo" data-demo="#demo10">▶️ Ver prompt</button>
-          <pre id="demo10" class="prompt hidden">Calcule consumo/custo com estas premissas.
-Mostre fórmulas e gere planilha com cenários (pessimista/base/otimista).</pre>
-        </div>
-      </div>
-    </section>
-
-    <!-- SLIDE 14 – Demonstração guiada -->
-    <section class="slide" data-title="Demo">
-      <h2>Demo guiada (simulação de prompts)</h2>
-      <div class="demo-box">
-        <div class="demo-header">Prompt</div>
-        <div class="demo-body">
-          <pre id="demoPrompt" class="typing"></pre>
-        </div>
-        <div class="demo-footer">
-          <button class="btn" id="btnType">▶️ Simular digitação</button>
-          <button class="btn ghost" id="btnSwap">↺ Trocar exemplo</button>
-        </div>
-      </div>
-      <div class="demo-note">Exemplos: Ata DR • Open Issues • E-mail técnico • Dashboard • Datasheets • Custos</div>
-    </section>
-
-    <!-- SLIDE 15 – Exercício rápido -->
-    <section class="slide" data-title="Exercício">
-      <h2>Exercício rápido (10–15 min)</h2>
-      <ol class="agenda">
-        <li>Escolha 1 caso prático da lista.</li>
-        <li>Escreva um prompt CRISP com objetivo, regras e formato.</li>
-        <li>Gere a 1ª versão; peça refinamentos; gere a 2ª versão.</li>
-        <li>Compare as versões e anote o tempo economizado.</li>
-      </ol>
-    </section>
-
-    <!-- SLIDE 16 – Métricas e ROI -->
-    <section class="slide" data-title="Métricas">
-      <h2>Métricas e ROI</h2>
-      <ul>
-        <li><b>Tempo:</b> minutos economizados por tarefa × volume mensal</li>
-        <li><b>Qualidade:</b> aderência ao template e redução de retrabalho</li>
-        <li><b>Velocidade de resposta:</b> SLAs internos de e-mail/DR</li>
-        <li><b>Uso seguro:</b> zero incidentes de compartilhamento indevido</li>
-      </ul>
-      <p class="footnote">Faça “antes/depois” para comprovar ganhos.</p>
-    </section>
-
-    <!-- SLIDE 17 – Plano de adoção -->
-    <section class="slide" data-title="Plano de adoção">
-      <h2>Plano de adoção (4 passos)</h2>
-      <ol class="agenda">
-        <li><b>Pilotos curtos</b> (DR, Open Issues, Dashboard)</li>
-        <li><b>Templates</b> e <b>checklists</b> prontos para reuso</li>
-        <li><b>Treino de prompts</b> com exemplos da área</li>
-        <li><b>Medição</b> e expansão para mais processos</li>
-      </ol>
-    </section>
-
-    <!-- SLIDE 18 – Perguntas frequentes -->
-    <section class="slide" data-title="FAQ">
-      <h2>Perguntas frequentes</h2>
-      <ul>
-        <li><b>Posso usar dados sensíveis?</b> Sim, mas priorize <b>AICO</b> e siga as políticas.</li>
-        <li><b>O Gemini “vê” meus arquivos?</b> Ele usa os acessos do Workspace e o que você fornece no chat; respeite permissões.</li>
-        <li><b>IA decide por mim?</b> Não — é apoio à decisão. A revisão é humana.</li>
-      </ul>
-    </section>
-
-    <!-- SLIDE 19 – Próximos passos -->
-    <section class="slide" data-title="Próximos passos">
-      <h2>Próximos passos</h2>
-      <ol class="agenda">
-        <li>Selecionar 3 fluxos-piloto (DR, Open Issues, Planilha-projeto)</li>
-        <li>Checklist de segurança (dados sensíveis → AICO)</li>
-        <li>Treino de prompts + templates reutilizáveis</li>
-        <li>Métricas de tempo/qualidade e retro</li>
-      </ol>
-    </section>
-
-    <!-- SLIDE 20 – Referências -->
-    <section class="slide" data-title="Referências">
-      <h2>Referências (públicas)</h2>
-      <ul class="refs">
-        <li>Google Workspace • <a href="https://support.google.com/a/answer/15706919" target="_blank">Privacidade do Gemini no Workspace</a></li>
-        <li>Workspace Blog • <a href="https://workspace.google.com/blog/ai-and-machine-learning/enterprise-security-controls-google-workspace-gemini" target="_blank">Controles de segurança para Gemini</a></li>
-        <li>Workspace Updates • <a href="https://workspaceupdates.googleblog.com/2025/04/configure-access-to-google-workspace-apps-in-gemini-ahead-of-general-availability.html" target="_blank">Admin: acesso a apps no Gemini</a></li>
-        <li>Google Blog • <a href="https://blog.google/technology/google-deepmind/gemini-model-updates-february-2025/" target="_blank">Gemini 2.0 (atualizações)</a></li>
-        <li>OpenAI • <a href="https://help.openai.com/en/articles/6825453-chatgpt-release-notes" target="_blank">ChatGPT – Release notes</a></li>
-        <li>Wikipedia • <a href="https://en.wikipedia.org/wiki/ChatGPT" target="_blank">História/linha do tempo do ChatGPT</a></li>
-      </ul>
-      <p class="footnote">AICO: solução interna. Use esta apresentação de forma confidencial.</p>
-    </section>
-
-    <!-- SLIDE 21 – Q&A -->
-    <section class="slide last" data-title="Q&A">
-      <h2>Q&A</h2>
-      <p>Obrigado!<br><small>Contato: (seu e-mail corporativo)</small></p>
-    </section>
-  </main>
-
-  <!-- Navegação rápida por miniaturas -->
-  <nav id="thumbs" class="thumbs" aria-label="Miniaturas"></nav>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
