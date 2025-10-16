@@ -1,101 +1,175 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kanban de Ferramentas</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>WeldScanner - Ferramenta de Análise</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <div class="app-container">
-        <header>
-            <h1>Kanban de ferramentas Digital Manufacturing Heron de Souza</h1>
-            <button id="add-task-btn"><i class="fas fa-plus"></i> Adicionar Novo Projeto</button>
-        </header>
-
-        <main class="kanban-board">
-            <div class="kanban-column" id="ideas" data-status="ideas">
-                <h2><i class="fas fa-lightbulb"></i> Ideias de Projetos</h2>
-                <div class="tasks-container" data-status="ideas"></div>
+    
+    <div id="create-project-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Criar Novo Projeto</h2>
+            <div>
+                <label for="new-project-name" class="block text-sm font-medium text-gray-700">Nome do Projeto</label>
+                <input type="text" id="new-project-name" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Ex: Projeto Fiat 2025">
             </div>
-
-            <div class="kanban-column" id="todo" data-status="todo">
-                <h2><i class="fas fa-list-check"></i> A Fazer</h2>
-                <div class="tasks-container" data-status="todo"></div>
+            <div class="mt-6 flex justify-end gap-3">
+                <button id="cancel-project-btn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Cancelar</button>
+                <button id="confirm-project-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Criar Projeto</button>
             </div>
-
-            <div class="kanban-column" id="inprogress" data-status="inprogress">
-                <h2><i class="fas fa-person-digging"></i> Em Andamento</h2>
-                <div class="tasks-container" data-status="inprogress"></div>
-            </div>
-
-            <div class="kanban-column" id="done" data-status="done">
-                <h2><i class="fas fa-flag-checkered"></i> Concluído</h2>
-                <div class="tasks-container" data-status="done"></div>
-            </div>
-        </main>
-    </div>
-
-    <div id="task-modal" class="modal-overlay">
-        <div class="modal-content">
-            <h2 id="modal-title">Adicionar Novo Projeto</h2>
-            <form id="task-form">
-                <input type="hidden" id="task-id">
-                <div class="form-group">
-                    <label for="task-name">Nome do Projeto/Ferramenta</label>
-                    <input type="text" id="task-name" required placeholder="Ex: Implementar novo sistema de login">
-                </div>
-                <div class="form-group">
-                    <label for="task-description">Descrição</label>
-                    <textarea id="task-description" rows="4" placeholder="Ex: Usar autenticação OAuth 2.0..."></textarea>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="task-deadline">Prazo Final</label>
-                        <input type="date" id="task-deadline" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="task-status">Status</label>
-                        <select id="task-status">
-                            <option value="ideas">Ideia de Projeto</option>
-                            <option value="todo">A Fazer</option>
-                            <option value="inprogress">Em Andamento</option>
-                            <option value="done">Concluído</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="task-progress">Progresso: <span id="progress-value">0%</span></label>
-                    <input type="range" id="task-progress" min="0" max="100" value="0">
-                </div>
-                <div class="modal-actions">
-                    <button type="submit" class="btn-save">Salvar</button>
-                    <button type="button" id="modal-close-btn" class="btn-cancel">Cancelar</button>
-                </div>
-            </form>
         </div>
     </div>
 
-    <div id="details-modal" class="modal-overlay">
-        <div class="modal-content">
-            <h2 id="details-title"></h2>
-            <p id="details-description"></p>
-            <hr>
-            <div class="details-footer">
-                <span id="details-deadline"></span>
-                <div id="details-progress-container">
-                    <strong>Progresso:</strong>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar" id="details-progress-bar"></div>
+    <div id="weldscanner-app">
+        <div class="flex h-screen bg-white">
+            <aside class="w-72 flex-shrink-0 bg-[var(--sidebar-bg)] text-gray-300 flex flex-col">
+                <div class="h-20 flex items-center justify-center border-b border-gray-700">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-8 h-8 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M12 8V4h-2v4H8l4 4l4-4h-2M4 18h16v-5h2v6a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-6h2v5Z"></path></svg>
+                        <h1 class="text-xl font-bold text-white">WeldScanner</h1>
                     </div>
-                    <span id="details-progress-text"></span>
                 </div>
-            </div>
-            <div class="modal-actions">
-                <button type="button" id="details-close-btn" class="btn-cancel">Fechar</button>
-            </div>
+
+                <nav class="px-4 py-6 space-y-2">
+                    <button data-tab="backup" class="nav-link active w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        <span>Backup</span>
+                    </button>
+                    <button data-tab="nominal" class="nav-link w-full flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-gray-700 text-left transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        <span>Nominal</span>
+                    </button>
+                    <button data-tab="comparativo" class="nav-link w-full flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-gray-700 text-left transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                        <span>Comparativo</span>
+                    </button>
+                    <button data-tab="visualizar3d" class="nav-link w-full flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-gray-700 text-left transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 16-4 4-4-4"></path><path d="M17 20V4"></path><path d="m3 8 4-4 4 4"></path><path d="M7 4v16"></path></svg>
+                        <span>Visualizar 3D</span>
+                    </button>
+                </nav>
+
+                <div class="px-4 py-4 space-y-3 border-t border-gray-700">
+                    <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Status</h3>
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <p class="text-gray-300 text-sm">Progresso</p>
+                            <p class="text-sm text-blue-400">75%</p>
+                        </div>
+                        <div class="w-full bg-gray-600 rounded-full h-1.5">
+                            <div class="bg-blue-500 h-1.5 rounded-full" style="width: 75%"></div>
+                        </div>
+                    </div>
+                    <div class="text-sm pt-2">
+                        <p class="font-semibold text-gray-300">Padrão Detectado:</p>
+                        <p class="font-mono text-blue-300 mt-1">VW_2022_V1</p>
+                    </div>
+                </div>
+
+                <div class="px-4 py-4 space-y-3 border-t border-gray-700 flex-1 flex flex-col overflow-y-auto">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Projetos</h3>
+                        <button id="add-project-btn" class="text-blue-400 hover:text-blue-300" title="Criar Novo Projeto">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                        </button>
+                    </div>
+                    <ul id="projects-list" class="space-y-2 text-sm flex-1 overflow-y-auto">
+                       <li class="project-item" data-project-name="Projeto VW002">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2 cursor-pointer tree-item-toggle p-1 rounded hover:bg-gray-700 flex-1">
+                                    <svg class="w-4 h-4 chevron-icon flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                    <svg class="w-5 h-5 text-yellow-500 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                                    <span class="font-semibold project-name-span">Projeto VW002</span>
+                                </div>
+                            </div>
+                            <div class="project-content pl-5 pt-2 border-l-2 border-gray-700 ml-2.5 hidden">
+                                <button class="load-backup-btn text-xs bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1 px-3 rounded-md mb-2">Carregar Backup</button>
+                                <ul class="backup-tree space-y-1 hidden"></ul>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </aside>
+            <main class="flex-1 bg-[var(--main-bg)] overflow-y-auto">
+                <div class="p-8">
+                    <header class="flex flex-wrap justify-between items-center gap-4 mb-8">
+                        <div>
+                            <h2 class="text-3xl font-bold text-gray-900">Dashboard de Análise</h2>
+                            <p class="text-gray-500 mt-1">Visão geral do projeto <span id="current-project-name" class="font-semibold text-gray-700">VW002</span></p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button class="bg-[var(--primary-accent)] hover:bg-[var(--primary-accent-hover)] text-white font-semibold py-2 px-5 rounded-lg transition-colors shadow-sm flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg><span>Importar Backup</span></button>
+                        </div>
+                    </header>
+                    <section class="bg-white p-6 rounded-xl border border-[var(--border-color)]">
+                        <div id="backup-content" class="tab-content">
+                            <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                                <h3 class="text-xl font-bold text-gray-800">Arquivos de Backup</h3>
+                                <div class="flex items-center gap-2">
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
+                                        </div>
+                                        <input type="text" id="backup-search-input" class="block w-full sm:w-64 pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Pesquisar...">
+                                    </div>
+                                    <select id="backup-search-select" class="block w-48 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                        <option value="-1">Pesquisar em Tudo</option>
+                                        <option value="0">Estação</option>
+                                        <option value="1">Linha</option>
+                                        <option value="2">Robô</option>
+                                        <option value="3">Programa</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full text-sm">
+                                    <thead class="border-b border-gray-200">
+                                        <tr>
+                                            <th class="py-2 px-3 text-left font-semibold text-gray-500">Estação</th>
+                                            <th class="py-2 px-3 text-left font-semibold text-gray-500">Linha</th>
+                                            <th class="py-2 px-3 text-left font-semibold text-gray-500">Robô</th>
+                                            <th class="py-2 px-3 text-left font-semibold text-gray-500">Programa</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="backup-table-body">
+                                        <tr class="border-b border-gray-100">
+                                            <td class="py-3 px-3">OP30</td>
+                                            <td class="py-3 px-3">LATERAL_DIREITA</td>
+                                            <td class="py-3 px-3">R01_VW002_OP30A</td>
+                                            <td class="py-3 px-3">PONTO_SOLDA_01</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-100">
+                                            <td class="py-3 px-3">OP30</td>
+                                            <td class="py-3 px-3">LATERAL_DIREITA</td>
+                                            <td class="py-3 px-3">R01_VW002_OP30A</td>
+                                            <td class="py-3 px-3">PONTO_SOLDA_02</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-100">
+                                            <td class="py-3 px-3">OP40</td>
+                                            <td class="py-3 px-3">LATERAL_ESQUERDA</td>
+                                            <td class="py-3 px-3">R02_VW002_OP40B</td>
+                                            <td class="py-3 px-3">PONTO_SOLDA_15</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-3 px-3">OP40</td>
+                                            <td class="py-3 px-3">LATERAL_ESQUERDA</td>
+                                            <td class="py-3 px-3">R02_VW002_OP40B</td>
+                                            <td class="py-3 px-3">PONTO_SOLDA_16</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div id="nominal-content" class="tab-content hidden"><h3 class="text-xl font-bold text-gray-800 mb-4">Nominal (Excel)</h3><p>Conteúdo da aba Nominal.</p></div>
+                        <div id="comparativo-content" class="tab-content hidden"><h3 class="text-xl font-bold text-gray-800 mb-6">Análise Comparativa</h3><section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6"><div class="bg-white border border-[var(--border-color)] rounded-xl p-5 flex items-center gap-5"><div class="w-12 h-12 flex items-center justify-center rounded-full bg-green-100 text-green-600"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><div><p class="text-gray-500 text-sm">Pontos OK</p><p class="text-2xl font-bold text-gray-900">1,280</p></div></div><div class="bg-white border border-[var(--border-color)] rounded-xl p-5 flex items-center gap-5"><div class="w-12 h-12 flex items-center justify-center rounded-full bg-yellow-100 text-yellow-600"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg></div><div><p class="text-gray-500 text-sm">Alerta</p><p class="text-2xl font-bold text-gray-900">75</p></div></div><div class="bg-white border border-[var(--border-color)] rounded-xl p-5 flex items-center gap-5"><div class="w-12 h-12 flex items-center justify-center rounded-full bg-red-100 text-red-600"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="m15 9-6 6"></path><path d="m9 9 6 6"></path></svg></div><div><p class="text-gray-500 text-sm">Fora de TOL</p><p class="text-2xl font-bold text-gray-900">12</p></div></div><div class="bg-white border border-[var(--border-color)] rounded-xl p-5 flex items-center gap-5"><div class="w-12 h-12 flex items-center justify-center rounded-full bg-gray-100 text-gray-600"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></div><div><p class="text-gray-500 text-sm">Não Encontrado</p><p class="text-2xl font-bold text-gray-900">5</p></div></div></section><p>Mais detalhes do comparativo aqui...</p></div>
+                        <div id="visualizar3d-content" class="tab-content hidden"><h3 class="text-xl font-bold text-gray-800 mb-4">Visualizador 3D</h3><div class="w-full h-96 bg-gray-200/50 border border-dashed border-gray-400 rounded-lg flex items-center justify-center"><p class="text-gray-500">Visualizador 3D</p></div></div>
+                    </section>
+                </div>
+            </main>
         </div>
     </div>
 
